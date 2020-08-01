@@ -6,21 +6,18 @@ import * as THREE from 'three';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit{
-  public scene;
-  public camera;
-  public renderer;
-  public cube;
+export class AppComponent implements OnInit, AfterViewInit {
+  public scene: any;
+  public camera: any;
+  public renderer: any;
+  public cube: any;
 
 
   ngOnInit() {
     this.init();
-    // window.addEventListener('resize', this.onWindowResize, false);
   }
 
-  ngAfterViewInit() {
-    window.addEventListener('resize', this.onWindowResize, false);
-  }
+  ngAfterViewInit() {}
 
   private init() {
     this.scene = new THREE.Scene();
@@ -41,22 +38,20 @@ export class AppComponent implements OnInit, AfterViewInit{
 
     this.camera.position.z = 5;
 
-    setInterval(() => {
-      this.animate();
-    }, 20);
-  }
+    const animate = () => {
+      this.cube.rotation.x += .01;
+      this.cube.rotation.y += .01;
 
-  private animate() {
-    this.cube.rotation.x += .02;
-    this.cube.rotation.y += .02;
+      this.renderer.render(this.scene, this.camera)
+      requestAnimationFrame(animate);
+    }
+    animate();
 
-    this.renderer.render(this.scene, this.camera)
-  }
-
-  private onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    window.addEventListener('resize', () => {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }, false);
   }
 
 }
