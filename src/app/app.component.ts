@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 @Component({
   selector: 'app-root',
@@ -7,10 +8,25 @@ import * as THREE from 'three';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, AfterViewInit {
-  public scene: any;
-  public camera: any;
-  public renderer: any;
-  public cube: any;
+  public scene = new THREE.Scene();
+  public camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1000);
+  public renderer = new THREE.WebGLRenderer({
+    antialias: true
+  });
+  public controls = new OrbitControls(this.camera, this.renderer.domElement);
+  public raycaster = new THREE.Raycaster();
+  public mouse = new THREE.Vector2();
+  public cubeGeometry = new THREE.BoxGeometry();
+  public cubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff0000
+  });
+  public cube = new THREE.Mesh(this.cubeGeometry, this.cubeMaterial);
+  public sphereGeometry = new THREE.SphereGeometry(2, 50, 50);
+  public sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff0000,
+    wireframe: true
+  });
+  public sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial);
 
 
   ngOnInit() {
@@ -19,39 +35,53 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {}
 
-  private init() {
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1000);
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true
-    });
+  public init() {
+    this.renderer.setClearColor('#e5e5e5');
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
-    let geometry = new THREE.BoxGeometry();
-    let material = new THREE.MeshBasicMaterial({
-      color: 0xff0000
-    });
-
-    this.cube = new THREE.Mesh(geometry, material);
+    // this.cube.scale.set(1,2,1);
+    this.cube.position.set(10, 0, 0);
     this.scene.add(this.cube);
+    this.scene.add(this.sphere);
 
-    this.camera.position.z = 5;
+    this.camera.position.set(0, 5, 5);
+    this.controls.update();
+
+    window.addEventListener('resize', () => {
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+    }, false);
+
+    window.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
+
+      console.log('Mouse X ->', this.mouse.x);
+      console.log('Mouse Y ->', this.mouse.y);
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+      let intersect: any = this.raycaster.intersectObjects(this.scene.children);
+      console.log('Intersects ->', intersect);
+      for (let i = 0; i < intersect.length; i++) {
+        intersect[i].object.material.color.set(0x00ffff);
+      }
+    }, false);
 
     const animate = () => {
       this.cube.rotation.x += .01;
       this.cube.rotation.y += .01;
 
+      this.controls.update()
+
       this.renderer.render(this.scene, this.camera)
       requestAnimationFrame(animate);
     }
     animate();
-
-    window.addEventListener('resize', () => {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }, false);
   }
 
 }
