@@ -16,17 +16,30 @@ export class AppComponent implements OnInit, AfterViewInit {
   public controls = new OrbitControls(this.camera, this.renderer.domElement);
   public raycaster = new THREE.Raycaster();
   public mouse = new THREE.Vector2();
+  public group = new THREE.Group();
   public cubeGeometry = new THREE.BoxGeometry();
   public cubeMaterial = new THREE.MeshBasicMaterial({
     color: 0xff0000
   });
   public cube = new THREE.Mesh(this.cubeGeometry, this.cubeMaterial);
-  public sphereGeometry = new THREE.SphereGeometry(2, 50, 50);
+  public sphereGeometry = new THREE.SphereGeometry(1, 50, 50);
   public sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xff0000,
     wireframe: true
   });
   public sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial);
+  public sphereGeometry2 = new THREE.SphereGeometry(2, 50, 50);
+  public sphereMaterial2 = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true
+  });
+  public sphere2 = new THREE.Mesh(this.sphereGeometry2, this.sphereMaterial2);
+  public sphereGeometry3 = new THREE.SphereGeometry(3, 50, 50);
+  public sphereMaterial3 = new THREE.MeshBasicMaterial({
+    color: 0x0000ff,
+    wireframe: true
+  });
+  public sphere3 = new THREE.Mesh(this.sphereGeometry3, this.sphereMaterial3);
 
 
   ngOnInit() {
@@ -41,9 +54,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     document.body.appendChild(this.renderer.domElement);
 
     // this.cube.scale.set(1,2,1);
-    this.cube.position.set(10, 0, 0);
-    this.scene.add(this.cube);
-    this.scene.add(this.sphere);
+    this.cube.position.set(4, 0, 0);
+    this.group.add(this.cube);
+    this.group.add(this.sphere);
+    this.group.add(this.sphere2);
+    this.group.add(this.sphere3);
+    // this.scene.add(this.cube);
+    this.scene.add(this.group);
 
     this.camera.position.set(0, 5, 5);
     this.controls.update();
@@ -73,8 +90,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }, false);
 
     const animate = () => {
-      this.cube.rotation.x += .01;
-      this.cube.rotation.y += .01;
+      this.group.rotation.x += .01;
+      this.group.rotation.y += .01;
+      // this.sphere.rotation.x += .01;
+      // this.sphere.rotation.y += .01;
 
       this.controls.update()
 
