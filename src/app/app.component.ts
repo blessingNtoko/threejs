@@ -18,7 +18,10 @@ export class AppComponent implements OnInit {
   public raycaster = new THREE.Raycaster();
   public mouse = new THREE.Vector2();
   public sphereGeometry = new THREE.SphereGeometry(1, 40, 40);
+  public coneBuffGeometry = new THREE.ConeBufferGeometry(1, 2, 16);
   public boxGeometry = new THREE.BoxGeometry(2, 2, 2);
+  public dodecGeometry = new THREE.DodecahedronBufferGeometry(2);
+  public planeGeometry = new THREE.PlaneBufferGeometry(9, 9);
 
 
   ngOnInit() {
@@ -26,7 +29,7 @@ export class AppComponent implements OnInit {
   }
 
   public init() {
-    this.renderer.setClearColor('#000');
+    this.renderer.setClearColor('#222');
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
@@ -36,13 +39,8 @@ export class AppComponent implements OnInit {
     this.scene.add(this.light);
 
     const objects3D = [
-      this.makeInstance(this.sphereGeometry, 0xff0000, true, 0, 0, 0),
-      this.makeInstance(this.boxGeometry, 0x00ff00, false, -4, 0, 0),
-      this.makeInstance(this.boxGeometry, 0x0000ff, false, 4, 0, 0),
-      this.makeInstance(this.boxGeometry, 0xff00ff, false, 0, 4, 0),
-      this.makeInstance(this.boxGeometry, 0x00ffff, false, 0, -4, 0),
-      this.makeInstance(this.boxGeometry, 0xffff00, false, 0, 0, 4),
-      this.makeInstance(this.boxGeometry, 0xe5e5e5, false, 0, 0, -4),
+      this.makeInstance(this.dodecGeometry, 0xff0000, false, 0, 0, 2),
+      this.makeInstance(this.planeGeometry, 0x0000ff, false, 0, 0, 0),
     ];
 
     objects3D.forEach(obj => {
@@ -76,10 +74,9 @@ export class AppComponent implements OnInit {
 
     const animate = () => {
       objects3D.forEach(obj => {
-        if (obj.geometry.type == 'BoxGeometry') {
-          obj.rotation.y += .01;
+        if (obj.geometry.type == "DodecahedronBufferGeometry") {
+          obj.rotation.x += .01;
         }
-        obj.rotation.x += .01
       });
 
       this.controls.update()
