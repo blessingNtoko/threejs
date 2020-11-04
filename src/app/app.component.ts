@@ -13,33 +13,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   public renderer = new THREE.WebGLRenderer({
     antialias: true
   });
+  public light = new THREE.DirectionalLight(0xffffff, 1);
   public controls = new OrbitControls(this.camera, this.renderer.domElement);
   public raycaster = new THREE.Raycaster();
   public mouse = new THREE.Vector2();
-  public group = new THREE.Group();
-  public cubeGeometry = new THREE.BoxGeometry();
-  public cubeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff0000
-  });
-  public cube = new THREE.Mesh(this.cubeGeometry, this.cubeMaterial);
-  public sphereGeometry = new THREE.SphereGeometry(1, 50, 50);
-  public sphereMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
-    wireframe: true
-  });
-  public sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial);
-  public sphereGeometry2 = new THREE.SphereGeometry(2, 50, 50);
-  public sphereMaterial2 = new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
-    wireframe: true
-  });
-  public sphere2 = new THREE.Mesh(this.sphereGeometry2, this.sphereMaterial2);
-  public sphereGeometry3 = new THREE.SphereGeometry(3, 50, 50);
-  public sphereMaterial3 = new THREE.MeshBasicMaterial({
-    color: 0x0000ff,
-    wireframe: true
-  });
-  public sphere3 = new THREE.Mesh(this.sphereGeometry3, this.sphereMaterial3);
+  public sphereGeometry = new THREE.SphereGeometry(1, 40, 40);
 
 
   ngOnInit() {
@@ -49,20 +27,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {}
 
   public init() {
-    this.renderer.setClearColor('#e5e5e5');
+    this.renderer.setClearColor('#000');
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
-    this.cube.scale.set(1, 1, 1);
-    this.cube.position.set(4, 0, 0);
-    this.group.add(this.cube);
-    this.group.add(this.sphere);
-    this.group.add(this.sphere2);
-    this.group.add(this.sphere3);
-    this.scene.add(this.group);
-
     this.camera.position.set(0, 5, 5);
     this.controls.update();
+    this.light.position.set(-1, 2, 4);
+    this.scene.add(this.light);
+
+    const spheres = [
+      this.makeInstance(this.sphereGeometry, 0xff0000, 0, true),
+      this.makeInstance(this.sphereGeometry, 0x00ff00, -4, true),
+      this.makeInstance(this.sphereGeometry, 0x0000ff, 4, true)
+    ];
 
     window.addEventListener('resize', () => {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -70,31 +48,11 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.camera.updateProjectionMatrix();
     }, false);
 
-    window.addEventListener('click', (event) => {
-      event.preventDefault();
-
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
-
-      console.log('Mouse X ->', this.mouse.x);
-      console.log('Mouse Y ->', this.mouse.y);
-
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-      let intersect: any = this.raycaster.intersectObjects(this.scene.children);
-      console.log('Intersects ->', intersect);
-      for (let i = 0; i < intersect.length; i++) {
-        intersect[i].object.material.color.set(0x00ffff);
-      }
-    }, false);
 
     const animate = () => {
-      // this.group.rotation.x += .05;
-      // this.group.rotation.y += .01;
-      this.sphere.rotation.x += .05;
-      this.sphere2.rotation.x += -.05;
-      // this.sphere3.rotation.x += .01;
-      // this.sphere.rotation.y += .01;
+      spheres.forEach(sphere => {
+        sphere.rotation.x += .01
+      });
 
       this.controls.update()
 
@@ -102,6 +60,17 @@ export class AppComponent implements OnInit, AfterViewInit {
       requestAnimationFrame(animate);
     }
     animate();
+  }
+
+  private makeInstance(geometry, color, x, wireframe) {
+    const material = new THREE.MeshPhongMaterial({color, wireframe});
+
+    const sphere = new THREE.Mesh(geometry, material);
+    this.scene.add(sphere);
+
+    sphere.position.x = x;
+
+    return sphere;
   }
 
 }
