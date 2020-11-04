@@ -37,9 +37,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.scene.add(this.light);
 
     const spheres = [
-      this.makeInstance(this.sphereGeometry, 0xff0000, 0, true),
-      this.makeInstance(this.sphereGeometry, 0x00ff00, -4, true),
-      this.makeInstance(this.sphereGeometry, 0x0000ff, 4, true)
+      this.makeInstance(this.sphereGeometry, 0xff0000, true, 0, 0, 0),
+      this.makeInstance(this.sphereGeometry, 0x00ff00, true, -4, 0, 0),
+      this.makeInstance(this.sphereGeometry, 0x0000ff, true, 4, 0, 0),
+      this.makeInstance(this.sphereGeometry, 0xff00ff, true, 0, 4, 0),
+      this.makeInstance(this.sphereGeometry, 0x00ffff, true, 0, -4, 0),
+      this.makeInstance(this.sphereGeometry, 0xffff00, true, 0, 0, 4),
+      this.makeInstance(this.sphereGeometry, 0xe5e5e5, true, 0, 0, -4),
     ];
 
     window.addEventListener('resize', () => {
@@ -62,13 +66,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     animate();
   }
 
-  private makeInstance(geometry, color, x, wireframe) {
+  private makeInstance(geometry, color, wireframe, x, y, z) {
     const material = new THREE.MeshPhongMaterial({color, wireframe});
 
     const sphere = new THREE.Mesh(geometry, material);
     this.scene.add(sphere);
 
     sphere.position.x = x;
+    sphere.position.y = y;
+    sphere.position.z = z;
 
     return sphere;
   }
