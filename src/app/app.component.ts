@@ -53,13 +53,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
-    // this.cube.scale.set(1,2,1);
+    this.cube.scale.set(1, 1, 1);
     this.cube.position.set(4, 0, 0);
     this.group.add(this.cube);
     this.group.add(this.sphere);
     this.group.add(this.sphere2);
     this.group.add(this.sphere3);
-    // this.scene.add(this.cube);
     this.scene.add(this.group);
 
     this.camera.position.set(0, 5, 5);
@@ -90,9 +89,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }, false);
 
     const animate = () => {
-      this.group.rotation.x += .01;
-      this.group.rotation.y += .01;
-      // this.sphere.rotation.x += .01;
+      // this.group.rotation.x += .05;
+      // this.group.rotation.y += .01;
+      this.sphere.rotation.x += .05;
+      this.sphere2.rotation.x += -.05;
+      // this.sphere3.rotation.x += .01;
       // this.sphere.rotation.y += .01;
 
       this.controls.update()
