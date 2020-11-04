@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   public scene = new THREE.Scene();
   public camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1000);
   public renderer = new THREE.WebGLRenderer({
@@ -18,13 +18,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   public raycaster = new THREE.Raycaster();
   public mouse = new THREE.Vector2();
   public sphereGeometry = new THREE.SphereGeometry(1, 40, 40);
+  public boxGeometry = new THREE.BoxGeometry(2, 2, 2);
 
 
   ngOnInit() {
     this.init();
   }
-
-  ngAfterViewInit() {}
 
   public init() {
     this.renderer.setClearColor('#000');
@@ -36,15 +35,19 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.light.position.set(-1, 2, 4);
     this.scene.add(this.light);
 
-    const spheres = [
+    const objects3D = [
       this.makeInstance(this.sphereGeometry, 0xff0000, true, 0, 0, 0),
-      this.makeInstance(this.sphereGeometry, 0x00ff00, true, -4, 0, 0),
-      this.makeInstance(this.sphereGeometry, 0x0000ff, true, 4, 0, 0),
-      this.makeInstance(this.sphereGeometry, 0xff00ff, true, 0, 4, 0),
-      this.makeInstance(this.sphereGeometry, 0x00ffff, true, 0, -4, 0),
-      this.makeInstance(this.sphereGeometry, 0xffff00, true, 0, 0, 4),
-      this.makeInstance(this.sphereGeometry, 0xe5e5e5, true, 0, 0, -4),
+      this.makeInstance(this.boxGeometry, 0x00ff00, false, -4, 0, 0),
+      this.makeInstance(this.boxGeometry, 0x0000ff, false, 4, 0, 0),
+      this.makeInstance(this.boxGeometry, 0xff00ff, false, 0, 4, 0),
+      this.makeInstance(this.boxGeometry, 0x00ffff, false, 0, -4, 0),
+      this.makeInstance(this.boxGeometry, 0xffff00, false, 0, 0, 4),
+      this.makeInstance(this.boxGeometry, 0xe5e5e5, false, 0, 0, -4),
     ];
+
+    objects3D.forEach(obj => {
+      console.log('3D Object -> ', obj);
+    });
 
     window.addEventListener('resize', () => {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -52,10 +55,31 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.camera.updateProjectionMatrix();
     }, false);
 
+    // window.addEventListener('click', (event) => {
+    //   event.preventDefault();
+
+    //   this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //   this.mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
+
+    //   console.log('Mouse X ->', this.mouse.x);
+    //   console.log('Mouse Y ->', this.mouse.y);
+
+    //   this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    //   let intersect: any = this.raycaster.intersectObjects(this.scene.children);
+    //   console.log('Intersects ->', intersect);
+    //   for (let i = 0; i < intersect.length; i++) {
+    //     intersect[i].object.material.color.set(0x000);
+    //   }
+    // }, false);
+
 
     const animate = () => {
-      spheres.forEach(sphere => {
-        sphere.rotation.x += .01
+      objects3D.forEach(obj => {
+        if (obj.geometry.type == 'BoxGeometry') {
+          obj.rotation.y += .01;
+        }
+        obj.rotation.x += .01
       });
 
       this.controls.update()
@@ -69,14 +93,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   private makeInstance(geometry, color, wireframe, x, y, z) {
     const material = new THREE.MeshPhongMaterial({color, wireframe});
 
-    const sphere = new THREE.Mesh(geometry, material);
-    this.scene.add(sphere);
+    const objToAdd = new THREE.Mesh(geometry, material);
+    this.scene.add(objToAdd);
 
-    sphere.position.x = x;
-    sphere.position.y = y;
-    sphere.position.z = z;
+    objToAdd.position.x = x;
+    objToAdd.position.y = y;
+    objToAdd.position.z = z;
 
-    return sphere;
+    return objToAdd;
   }
 
 }
